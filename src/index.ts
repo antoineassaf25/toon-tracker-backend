@@ -15,7 +15,7 @@ async function start() {
     setInterval(async () => {
       console.log("Polling ToonHQ for new toons...")
       await updateAllToons()
-    }, 60 * 1000)
+    }, 120 * 1000)
   
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`)
