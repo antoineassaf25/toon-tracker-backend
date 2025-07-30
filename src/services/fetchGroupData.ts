@@ -10,7 +10,6 @@ export async function fetchGroupData() {
 
         const data = await response.json()
         
-        //console.log(data)
         return data
     } catch (error) {
         console.error("failed to fetch group data: ", error)

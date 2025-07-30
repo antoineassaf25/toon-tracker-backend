@@ -46,12 +46,20 @@ export async function storeToonStats(toon: ToonStats) {
                     ...toon_stats,
                     toon_id: toon_id,
                     snapshot_type: "current",
-                    modified_at: Object.keys(diff).length === 1 ? null : Date.now()
+                    modified_at: Object.keys(diff).length === 1 ? null : new Date()
                 },
                 { onConflict: 'toon_id,snapshot_type' });
             
             if (upsertError) {
                 console.log("Error adding to main table: " + upsertError.message);
+            }
+
+            if ('photo' in diff) {
+                delete (diff as any).photo;
+            }
+
+            if (Object.keys(diff).length === 0) {
+                return
             }
 
             const { error: updateError } = await supabaseClient

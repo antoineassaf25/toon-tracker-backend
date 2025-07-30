@@ -11,11 +11,10 @@ async function start() {
   
     await updateAllToons()
   
-    // Run every 60 seconds
     setInterval(async () => {
       console.log("Polling ToonHQ for new toons...")
       await updateAllToons()
-    }, 120 * 1000)
+    }, 40 * 1000)
   
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`)
