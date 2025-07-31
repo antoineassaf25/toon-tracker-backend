@@ -29,6 +29,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
     "esbuild": "^0.25.8",
     "tsx": "^4.20.3",
     "typescript": "^5.9.0-dev.20250730"
