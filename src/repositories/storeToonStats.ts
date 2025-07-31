@@ -32,10 +32,17 @@ export async function storeToonStats(toon: ToonStats) {
     } else if (Array.isArray(data) && data.length > 0) {
         // there's an init snapshot, but the updated type may or may not doesn't exist
     
-        const snapshot_json = data.filter((data) => data.snapshot_type === "start")[0];
+
+        const snapshot_json =
+        data.find(d => d.snapshot_type === "current") ??
+        data.find(d => d.snapshot_type === "start");
+    
+        if (!snapshot_json) return;
+
         //console.log("Toon already exists: ", snapshot_json.snapshot_type);
         const toon_current = new ToonStats(snapshot_json) 
         const diff: Partial<IToonStats> = toon_current.diffToonStats(toon)
+        //console.log(toon_current, toon, diff)
         if (Object.keys(diff).length > 0) {
             console.log("Updating existing toon ", toon_id, toon_stats.name, diff)
 
@@ -54,13 +61,7 @@ export async function storeToonStats(toon: ToonStats) {
                 console.log("Error adding to main table: " + upsertError.message);
             }
 
-            if ('photo' in diff) {
-                delete (diff as any).photo;
-            }
-
-            if (Object.keys(diff).length === 0) {
-                return
-            }
+            if ('photo' in diff) delete (diff as any).photo;
 
             const { error: updateError } = await supabaseClient
                 .from('toon_stats_updates')
