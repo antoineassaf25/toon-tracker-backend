@@ -11,8 +11,8 @@ const json = (code: number, body: unknown) => ({
   statusCode: code,
   headers: {
     'content-type': 'application/json',
-    'access-control-allow-origin': '*', // enable CORS if calling from browser
-    'access-control-allow-methods': 'GET,POST'
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET,OPTIONS'
   },
   body: JSON.stringify(body),
 });
