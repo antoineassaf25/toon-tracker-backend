@@ -26,28 +26,14 @@ export const handler = async (event: APIGatewayProxyEventV2 | any = {}) => {
     }
 
     // API Gateway HTTP API
-    const method = event?.requestContext?.http?.method ?? event?.httpMethod ?? 'GET';
-    const path   = event?.requestContext?.http?.path   ?? event?.rawPath ?? '/';
+    const routeKey = event?.requestContext?.routeKey ?? '';
     const params = event.pathParameters ?? {}
     const qs     = event.queryStringParameters ?? {};
 
-    if (method === 'GET' && path === '/health') return json(200, { ok: true });
+    // GET /health
+    if (routeKey === 'GET /health') return json(200, { ok: true });
 
-    // GET /api/names/{id}
-    if (method == 'GET' && /^\/api\/names\/[^/]+$/.test(path)) {
-      const idStr = params.id ?? path.split('/')[3];
-      if (!idStr) return json(400, { error: 'id required' });
-      const id = Number(idStr);
-      if (!Number.isFinite(id)) return json(400, { error: 'id must be a number' });
-
-      const payload = await getToonInfoFromToonId(id);
-      if (!payload) return json(404, { error: 'not found' });
-
-      return json(200, { ok: true, ran: true, payload})
-    }
-
-    // GET /api/names?q=nelly&exact=true
-    if (method === 'GET' && path === '/api/names') {
+    if (routeKey === 'GET /toons/ids') {
       const q = (qs.q ?? '').trim();
       if (!q) return json(400, { error: 'q is required' });
 
@@ -56,7 +42,18 @@ export const handler = async (event: APIGatewayProxyEventV2 | any = {}) => {
       return json(200, { ok: true, payload });
     }
 
-    return json(404, { error: 'Not found', method, path });
+    if (routeKey === 'GET /toons/{id}') {
+      const idStr = params.id ?? '';
+      if (!idStr) return json(400, { error: 'id required' });
+      const id = Number(idStr);
+      if (!Number.isFinite(id)) return json(400, { error: 'id must be a number' });
+
+      const payload = await getToonInfoFromToonId(id);
+      if (!payload) return json(404, { error: 'not found' });
+      return json(200, { ok: true, payload });
+    }
+
+    return json(404, { error: 'Not found', routeKey });
   } catch (e: any) {
     console.error(e);
     return json(500, { error: 'Server error', message: e?.message ?? String(e) });
